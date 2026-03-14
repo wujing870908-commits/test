@@ -1,0 +1,25 @@
+{
+  "name": "financial-news-video",
+  "version": "1.0.0",
+  "description": "Daily US stock market video rendered with Remotion",
+  "scripts": {
+    "start": "npx remotion studio",
+    "render": "npx remotion render DailyReport output/daily_report.mp4",
+    "preview": "npx remotion preview"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.0",
+    "remotion": "^4.0.0",
+    "recharts": "^2.12.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "typescript": "^5.4.0"
+  },
+  "remotion": {
+    "entryPoint": "src/index.ts"
+  }
+}

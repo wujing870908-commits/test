@@ -1,0 +1,10 @@
+.env
+__pycache__/
+*.py[cod]
+.venv/
+output/
+node_modules/
+video/remotion/dist/
+*.mp3
+*.mp4
+*.log
