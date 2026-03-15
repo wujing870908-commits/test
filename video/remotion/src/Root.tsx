@@ -8,49 +8,67 @@ const defaultProps: DailyReportProps = {
   snapshot: {
     as_of: "2026-03-14T07:30:00+08:00",
     indices: {
-      "S&P 500": { price: 5120.5,  change_pct:  0.85, history: [] },
-      "纳斯达克":  { price: 16230.0, change_pct:  1.12, history: [] },
-      "道琼斯":   { price: 38400.0, change_pct:  0.43, history: [] },
-      "恐慌指数":  { price: 14.2,   change_pct: -5.10, history: [] },
+      "标准普尔500": { price: 6632.0, change_pct: -0.61, history: [] },
+      "纳斯达克":    { price: 21090.0, change_pct: -0.93, history: [] },
+      "道琼斯":      { price: 43428.0, change_pct: -0.26, history: [] },
+      "罗素2000":    { price: 2120.0,  change_pct: -1.10, history: [] },
+      "恐慌指数":    { price: 21.5,    change_pct:  5.20, history: [] },
     },
     mag7: {
-      "苹果":   { price: 178.5, change_pct:  0.6, history: [] },
-      "微软":   { price: 415.0, change_pct:  1.2, history: [] },
-      "谷歌":   { price: 172.0, change_pct:  0.9, history: [] },
-      "亚马逊": { price: 195.0, change_pct:  2.1, history: [] },
-      "Meta":  { price: 530.0, change_pct:  1.8, history: [] },
-      "特斯拉": { price: 183.0, change_pct: -1.5, history: [] },
-      "英伟达": { price: 875.0, change_pct:  3.2, history: [] },
+      "苹果":   { price: 213.5, change_pct: -2.21, history: [] },
+      "微软":   { price: 388.0, change_pct: -1.57, history: [] },
+      "谷歌":   { price: 170.0, change_pct: -0.85, history: [] },
+      "亚马逊": { price: 198.0, change_pct: -0.72, history: [] },
+      "Meta":  { price: 570.0, change_pct: -3.83, history: [] },
+      "特斯拉": { price: 265.0, change_pct: -0.45, history: [] },
+      "英伟达": { price: 112.0, change_pct: -1.58, history: [] },
     },
     commodities: {
-      "黄金":   { price: 2320.0, change_pct: -0.30, history: [] },
-      "原油":   { price:   82.5, change_pct:  1.10, history: [] },
-      "比特币": { price: 72000.0, change_pct: 2.50, history: [] },
+      "WTI原油":   { price: 68.5,   change_pct:  3.11, history: [] },
+      "布伦特原油": { price: 71.2,   change_pct:  2.80, history: [] },
+      "黄金":      { price: 2980.0, change_pct: -1.06, history: [] },
+      "白银":      { price: 33.5,   change_pct: -0.80, history: [] },
+      "天然气":    { price: 4.12,   change_pct:  1.20, history: [] },
+      "铜":        { price: 4.85,   change_pct: -0.50, history: [] },
+    },
+    crypto: {
+      "比特币":  { price: 83000.0, change_pct: -0.23, history: [] },
+      "以太坊":  { price: 1950.0,  change_pct:  1.10, history: [] },
+      "XRP":    { price: 2.35,    change_pct:  0.85, history: [] },
+    },
+    sectors: {
+      "能源":    { price: 92.0, change_pct:  3.11, history: [] },
+      "科技":    { price: 220.0, change_pct: -1.84, history: [] },
+      "金融":    { price: 48.5, change_pct: -1.63, history: [] },
+      "工业":    { price: 113.0, change_pct: -2.51, history: [] },
     },
   },
   manifest: {
     audio_path: "narration.mp3",
-    total_duration_ms: 60000,
+    total_duration_ms: 120000,
     segments: [],
   },
   newsItems: [
-    { title: "美联储维持利率不变，暗示年内降息两次", source: "Reuters" },
-    { title: "英伟达发布新一代 AI 芯片，股价大涨", source: "Bloomberg" },
+    { title: "特朗普下令打击伊朗石油枢纽，霍尔木兹局势升温", source: "Reuters" },
+    { title: "美联储官员暗示通胀黏性，降息预期降温", source: "Bloomberg" },
   ],
 };
 
 export const Root: React.FC = () => {
-  // Duration driven by audio manifest; default 60 s at 30 fps = 1800 frames
-  const durationInFrames = Math.ceil((defaultProps.manifest.total_duration_ms / 1000) * 30);
-
   return (
     <Composition
       id="DailyReport"
       component={DailyReport}
-      durationInFrames={Math.max(durationInFrames, 60)}
+      // calculateMetadata reads actual props at render time for correct duration
+      calculateMetadata={({ props }) => {
+        const durationInFrames = Math.ceil(
+          (props.manifest.total_duration_ms / 1000) * 30
+        );
+        return { durationInFrames: Math.max(durationInFrames, 60) };
+      }}
       fps={30}
-      width={1920}
-      height={1080}
+      width={1080}
+      height={1920}
       defaultProps={defaultProps}
     />
   );

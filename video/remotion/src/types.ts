@@ -11,7 +11,7 @@ export interface AssetData {
 
 export interface TimingSegment {
   index: number;
-  type: "intro" | "indices" | "mag7" | "commodities" | "news" | "outro";
+  type: "intro" | "indices" | "mag7" | "commodities" | "crypto" | "sectors" | "news" | "outro";
   text: string;
   highlight: string | null;
   start_ms: number;
@@ -29,6 +29,8 @@ export interface MarketSnapshot {
   indices: Record<string, AssetData>;
   mag7: Record<string, AssetData>;
   commodities: Record<string, AssetData>;
+  crypto: Record<string, AssetData>;
+  sectors: Record<string, AssetData>;
 }
 
 /** Props passed to the Remotion composition */

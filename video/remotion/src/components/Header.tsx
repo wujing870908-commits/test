@@ -20,29 +20,96 @@ export const Header: React.FC<HeaderProps> = ({ asOf }) => {
         top: 0,
         left: 0,
         right: 0,
-        height: 90,
+        height: 110,
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        padding: "0 60px",
+        padding: "0 50px",
         opacity,
-        borderBottom: "1px solid rgba(0,180,255,0.2)",
-        background: "rgba(0,0,0,0.3)",
+        background: "linear-gradient(180deg, rgba(0,10,30,0.95) 0%, rgba(0,10,30,0.6) 100%)",
+        borderBottom: "1px solid rgba(0,180,255,0.25)",
       }}
     >
+      {/* Left: Logo + title */}
       <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-        {/* Logo dot */}
+        <div style={{ position: "relative" }}>
+          {/* Outer ring */}
+          <div
+            style={{
+              width: 44,
+              height: 44,
+              borderRadius: "50%",
+              border: "2px solid rgba(0,180,255,0.5)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {/* Inner dot */}
+            <div
+              style={{
+                width: 14,
+                height: 14,
+                borderRadius: "50%",
+                background: "#00b4ff",
+                boxShadow: "0 0 16px #00b4ff, 0 0 32px rgba(0,180,255,0.4)",
+              }}
+            />
+          </div>
+        </div>
+        <div>
+          <div
+            style={{
+              color: "#00b4ff",
+              fontSize: 34,
+              fontWeight: 900,
+              letterSpacing: 4,
+              textShadow: "0 0 20px rgba(0,180,255,0.6)",
+              lineHeight: 1,
+            }}
+          >
+            {props.isWeekly ? "美股周报" : "美股日报"}
+          </div>
+          <div
+            style={{
+              color: "rgba(0,180,255,0.5)",
+              fontSize: 14,
+              letterSpacing: 3,
+              marginTop: 3,
+            }}
+          >
+            US MARKET DAILY
+          </div>
+        </div>
+      </div>
+
+      {/* Right: Date */}
+      <div style={{ textAlign: "right" }}>
+        <div style={{ color: "rgba(255,255,255,0.85)", fontSize: 20, fontWeight: 500 }}>
+          {date}
+        </div>
         <div
           style={{
-            width: 10, height: 10, borderRadius: "50%",
-            background: "#00b4ff", boxShadow: "0 0 12px #00b4ff",
+            marginTop: 4,
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
           }}
-        />
-        <span style={{ color: "#00b4ff", fontSize: 28, fontWeight: 700, letterSpacing: 2 }}>
-          美股日报
-        </span>
+        >
+          <div
+            style={{
+              width: 8,
+              height: 8,
+              borderRadius: "50%",
+              background: "#00e676",
+              boxShadow: "0 0 8px #00e676",
+            }}
+          />
+          <span style={{ color: "rgba(0,230,118,0.8)", fontSize: 14, letterSpacing: 1 }}>
+            LIVE
+          </span>
+        </div>
       </div>
-      <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 22 }}>{date}</span>
     </div>
   );
 };
