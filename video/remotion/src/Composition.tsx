@@ -53,8 +53,8 @@ const IntroCover: React.FC<{ asOf: string }> = ({ asOf }) => {
   const { fps } = useVideoConfig();
 
   const progress = spring({ frame, fps, config: { damping: 16, stiffness: 100 } });
-  const opacity  = interpolate(progress, [0, 1], [0, 1]);
-  const scale    = interpolate(progress, [0, 1], [0.92, 1]);
+  // opacity always 1 — Douyin uses the first frame as cover thumbnail, must not be dark
+  const scale    = interpolate(progress, [0, 1], [0.95, 1]);
 
   const date = new Date(asOf).toLocaleDateString("zh-CN", {
     year: "numeric", month: "long", day: "numeric", weekday: "long",
@@ -68,7 +68,6 @@ const IntroCover: React.FC<{ asOf: string }> = ({ asOf }) => {
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
-      opacity,
       transform: `scale(${scale})`,
     }}>
       {/* Decorative top line */}
@@ -84,7 +83,7 @@ const IntroCover: React.FC<{ asOf: string }> = ({ asOf }) => {
         lineHeight: 1,
         marginBottom: 16,
       }}>
-        {props.title || "海外金融周报"}
+        {"美股日报"}
       </div>
 
       {/* Subtitle accent */}
@@ -96,7 +95,7 @@ const IntroCover: React.FC<{ asOf: string }> = ({ asOf }) => {
       }}>
         <div style={{ width: 40, height: 1, background: "rgba(0,180,255,0.5)" }} />
         <div style={{ color: "#00b4ff", fontSize: 22, letterSpacing: 6, fontWeight: 500 }}>
-          {props.subtitle?.toUpperCase() || "US MARKET WEEKLY REPORT"}
+          {"US MARKET DAILY REPORT"}
         </div>
         <div style={{ width: 40, height: 1, background: "rgba(0,180,255,0.5)" }} />
       </div>
@@ -277,7 +276,7 @@ export const DailyReport: React.FC<DailyReportProps> = ({ snapshot, manifest, ne
           transform: "translate(-50%,-50%)", textAlign: "center",
         }}>
           <div style={{ color: "#00b4ff", fontSize: 64, fontWeight: 900, letterSpacing: 6, textShadow: "0 0 40px rgba(0,180,255,0.7)" }}>
-            {props.title || "海外金融周报"}
+            {"美股日报"}
           </div>
           <div style={{ width: 120, height: 3, background: "linear-gradient(90deg,transparent,#00b4ff,transparent)", margin: "20px auto", borderRadius: 2 }} />
           <div style={{ color: "rgba(255,255,255,0.55)", fontSize: 28, letterSpacing: 2 }}>

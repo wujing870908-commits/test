@@ -59,6 +59,35 @@ def _write_remotion_props(
     return props_path
 
 
+def _extract_cover(video_path: Path, out_dir: Path, date_str: str) -> Path | None:
+    """Extract a cover JPEG at 0.5s (accurate seek, intro title card fully visible)."""
+    cover_path = out_dir / f"cover_{date_str}.jpg"
+    try:
+        # Accurate frame extraction: -ss AFTER -i avoids keyframe-snap to black frame.
+        # 0.5s = intro title card is fully visible (no fade-in on IntroCover now).
+        subprocess.run(
+            [
+                "ffmpeg", "-y",
+                "-i", str(video_path),
+                "-ss", "0.5",
+                "-vframes", "1",
+                "-q:v", "2",            # high-quality JPEG
+                "-update", "1",
+                str(cover_path),
+            ],
+            check=True, capture_output=True,
+        )
+        logger.info("Cover image → %s", cover_path)
+
+        latest_cover = video_path.parent.parent / "latest_cover.jpg"
+        shutil.copy2(cover_path, latest_cover)
+        logger.info("Latest cover → %s", latest_cover)
+        return cover_path
+    except Exception as exc:
+        logger.warning("Cover extraction/embedding failed: %s", exc)
+        return None
+
+
 def _render_video(props_path: Path, out_dir: Path, audio_path: str, date_str: str) -> Path:
     """Calls `npx remotion render` with injected props."""
     video_filename = f"daily_report_video_v2_{date_str}.mp4"
@@ -93,6 +122,9 @@ def _render_video(props_path: Path, out_dir: Path, audio_path: str, date_str: st
     latest_path = video_path.parent.parent / "latest.mp4"
     shutil.copy2(video_path, latest_path)
     logger.info("Latest copy → %s", latest_path)
+
+    # Extract cover image for Douyin upload
+    _extract_cover(video_path, out_dir, date_str)
 
     return video_path
 
@@ -140,10 +172,15 @@ def run_pipeline(render_video: bool = True) -> dict[str, Any]:
     props_path = _write_remotion_props(out_dir, snapshot, manifest, news)
 
     video_path = None
+    cover_path = None
     if render_video:
         logger.info("[5/5] Rendering video with Remotion…")
         try:
             video_path = _render_video(props_path, out_dir, manifest["audio_path"], date_str)
+            # cover is extracted inside _render_video; expose path for callers
+            expected_cover = out_dir / f"cover_{date_str}.jpg"
+            if expected_cover.exists():
+                cover_path = expected_cover
         except Exception as exc:
             logger.error("Video render failed: %s", exc)
 
@@ -153,6 +190,7 @@ def run_pipeline(render_video: bool = True) -> dict[str, Any]:
         "script_path":  str(script_path),
         "audio_path":   manifest["audio_path"],
         "video_path":   str(video_path) if video_path else None,
+        "cover_path":   str(cover_path) if cover_path else None,
         "segments":     len(segments),
         "duration_ms":  manifest["total_duration_ms"],
     }

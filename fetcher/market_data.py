@@ -10,7 +10,7 @@ from typing import Any
 
 import yfinance as yf
 
-from config import INDICES, MAG7, COMMODITIES, CRYPTO, SECTORS
+from config import INDICES, MAG7, COMMODITIES, SECTORS
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +61,6 @@ def fetch_market_snapshot() -> dict[str, Any]:
         "indices": {},
         "mag7": {},
         "commodities": {},
-        "crypto": {},
         "sectors": {},
     }
 
@@ -69,7 +68,6 @@ def fetch_market_snapshot() -> dict[str, Any]:
         ("indices",     INDICES),
         ("mag7",        MAG7),
         ("commodities", COMMODITIES),
-        ("crypto",      CRYPTO),
         ("sectors",     SECTORS),
     ]
 

@@ -26,13 +26,15 @@ SYSTEM_PROMPT = """你是一位专业的中文财经播报员，风格简洁、�
 你的任务是把原始市场数据转化为一段适合视频播报的中文脚本，总播报时长控制在 110-130 秒（约 2 分钟）。
 
 【数据准确性是最高优先级，任何错误都可能误导投资者】
+【注意：本视频为合规财经内容，不得包含任何加密货币/虚拟货币相关内容】
 
 要求：
 1. 以 JSON 数组格式返回，每个元素是一个"片段"，包含字段：
-   - "type": 片段类型，值为 intro / indices / mag7 / commodities / crypto / sectors / news / outro 之一
+   - "type": 片段类型，值为 intro / indices / mag7 / commodities / sectors / news / outro 之一
    - "text": 播报员要说的话（中文，自然流畅，每段 50-70 字，语速约 4字/秒）
    - "highlight": 可选，该片段最值得上屏展示的关键数字或词语
-2. 必须包含的段落顺序：intro → indices → mag7 → commodities → crypto → sectors → news → outro
+2. 必须包含的段落顺序：intro → indices → mag7 → commodities → sectors → news → outro
+3. 严禁出现：比特币、以太坊、加密货币、虚拟货币、数字货币、区块链投资、BTC、ETH、XRP、币、USDT 等任何虚拟资产相关词汇
 3. 涨跌方向规则（严格执行，绝不允许搞反）：
    - change_pct 为负数 → 只能用"跌"、"下跌"、"回落"等词，绝对禁止用"涨"
    - change_pct 为正数 → 只能用"涨"、"上涨"、"走强"等词，绝对禁止用"跌"
@@ -63,7 +65,6 @@ def _build_user_message(snapshot: dict[str, Any], news: list[dict[str, str]]) ->
     )
 
     sectors_str = _fmt_group(snapshot.get("sectors", {}))
-    crypto_str = _fmt_group(snapshot.get("crypto", {}))
 
     return f"""时间：{snapshot['as_of']}
 
@@ -76,16 +77,13 @@ def _build_user_message(snapshot: dict[str, Any], news: list[dict[str, str]]) ->
 【大宗商品】
 {_fmt_group(snapshot['commodities'])}
 
-【加密货币】
-{crypto_str}
-
 【板块ETF】
 {sectors_str}
 
 【宏观新闻】
 {news_lines}
 
-请生成约2分钟的播报脚本。"""
+请生成约2分钟的播报脚本（注意：不要提及任何加密货币/虚拟货币内容）。"""
 
 
 def _validate_script(segments: list[dict[str, Any]], snapshot: dict[str, Any]) -> list[str]:
@@ -95,7 +93,7 @@ def _validate_script(segments: list[dict[str, Any]], snapshot: dict[str, Any]) -
     """
     # Build name → change_pct lookup across all asset categories
     assets: dict[str, float] = {}
-    for cat in ("indices", "mag7", "commodities", "crypto", "sectors"):
+    for cat in ("indices", "mag7", "commodities", "sectors"):
         for name, data in snapshot.get(cat, {}).items():
             if data.get("change_pct") is not None:
                 assets[name] = data["change_pct"]

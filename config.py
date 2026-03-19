@@ -42,12 +42,6 @@ COMMODITIES = {
     "铜":       "HG=F",
 }
 
-CRYPTO = {
-    "比特币":  "BTC-USD",
-    "以太坊":  "ETH-USD",
-    "XRP":    "XRP-USD",
-}
-
 SECTORS = {
     "科技":    "XLK",
     "金融":    "XLF",

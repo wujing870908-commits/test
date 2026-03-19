@@ -44,9 +44,8 @@ REPORT_SYSTEM_PROMPT = """你是一位专业的中文金融分析师，擅长撰
 
 ---
 
-## 2. 大宗商品与加密货币
+## 2. 大宗商品
 ### 大宗商品（表格）
-### 加密货币（表格）
 深度分析
 
 ---
@@ -97,7 +96,6 @@ def _build_report_prompt(snapshot: dict[str, Any], news: list[dict[str, str]]) -
     )
 
     sectors_str = _fmt(snapshot.get("sectors", {}))
-    crypto_str = _fmt(snapshot.get("crypto", {}))
 
     beijing_date = datetime.now(timezone(timedelta(hours=8))).strftime("%Y年%m月%d日")
 
@@ -113,16 +111,13 @@ def _build_report_prompt(snapshot: dict[str, Any], news: list[dict[str, str]]) -
 【大宗商品】
 {_fmt(snapshot['commodities'])}
 
-【加密货币】
-{crypto_str}
-
 【板块ETF涨跌】
 {sectors_str}
 
 【宏观新闻标题】
 {news_lines}
 
-请生成完整日报。"""
+请生成完整日报（注意：不要包含任何加密货币/虚拟货币相关内容）。"""
 
 
 def generate_report(

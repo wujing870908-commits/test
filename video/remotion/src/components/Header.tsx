@@ -68,7 +68,7 @@ export const Header: React.FC<HeaderProps> = ({ asOf }) => {
               lineHeight: 1,
             }}
           >
-            {props.isWeekly ? "美股周报" : "美股日报"}
+            {"美股日报"}
           </div>
           <div
             style={{

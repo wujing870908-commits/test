@@ -6,6 +6,20 @@ interface SubtitleBarProps {
   segment: TimingSegment | null;
 }
 
+// Max Chinese characters per subtitle line (based on available width ≈ 864px at fontSize 34)
+const CHARS_PER_LINE = 24;
+
+/** Split text into lines of at most CHARS_PER_LINE characters. */
+function splitLines(text: string): string[] {
+  const lines: string[] = [];
+  let i = 0;
+  while (i < text.length) {
+    lines.push(text.slice(i, i + CHARS_PER_LINE));
+    i += CHARS_PER_LINE;
+  }
+  return lines;
+}
+
 export const SubtitleBar: React.FC<SubtitleBarProps> = ({ segment }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -15,6 +29,20 @@ export const SubtitleBar: React.FC<SubtitleBarProps> = ({ segment }) => {
   const translateY = interpolate(progress, [0, 1], [20, 0]);
 
   if (!segment) return null;
+
+  // Calculate which 2 lines to show based on playback position within this segment
+  const lines = splitLines(segment.text);
+  const currentMs = Math.round((frame / fps) * 1000);
+  const segDuration = segment.end_ms - segment.start_ms;
+  const elapsed = Math.max(0, currentMs - segment.start_ms);
+  const readProgress = segDuration > 0 ? Math.min(1, elapsed / segDuration) : 0;
+
+  // Current character index being spoken
+  const charPos = Math.floor(readProgress * segment.text.length);
+  const currentLineIdx = Math.floor(charPos / CHARS_PER_LINE);
+  // Snap the window: show currentLine and the next one (max 2 lines)
+  const windowStart = Math.max(0, Math.min(currentLineIdx, lines.length - 2));
+  const visibleLines = lines.slice(windowStart, windowStart + 2);
 
   return (
     <div
@@ -49,7 +77,7 @@ export const SubtitleBar: React.FC<SubtitleBarProps> = ({ segment }) => {
         </div>
       )}
 
-      {/* Main subtitle */}
+      {/* Main subtitle — max 2 lines, advances with audio */}
       <div
         style={{
           background: "rgba(4, 12, 28, 0.88)",
@@ -60,18 +88,21 @@ export const SubtitleBar: React.FC<SubtitleBarProps> = ({ segment }) => {
           boxShadow: "0 4px 30px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)",
         }}
       >
-        <div
-          style={{
-            color: "#ffffff",
-            fontSize: 34,
-            lineHeight: 1.65,
-            fontWeight: 600,
-            letterSpacing: 0.5,
-            textShadow: "0 1px 4px rgba(0,0,0,0.8)",
-          }}
-        >
-          {segment.text}
-        </div>
+        {visibleLines.map((line, i) => (
+          <div
+            key={`${windowStart}-${i}`}
+            style={{
+              color: "#ffffff",
+              fontSize: 34,
+              lineHeight: 1.65,
+              fontWeight: 600,
+              letterSpacing: 0.5,
+              textShadow: "0 1px 4px rgba(0,0,0,0.8)",
+            }}
+          >
+            {line}
+          </div>
+        ))}
       </div>
     </div>
   );
