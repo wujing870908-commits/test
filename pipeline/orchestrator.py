@@ -60,16 +60,16 @@ def _write_remotion_props(
 
 
 def _extract_cover(video_path: Path, out_dir: Path, date_str: str) -> Path | None:
-    """Extract a cover JPEG at 0.5s (accurate seek, intro title card fully visible)."""
+    """Extract cover JPEG from frame 0 (baked by Remotion Freeze — guaranteed cover)."""
     cover_path = out_dir / f"cover_{date_str}.jpg"
     try:
-        # Accurate frame extraction: -ss AFTER -i avoids keyframe-snap to black frame.
-        # 0.5s = intro title card is fully visible (no fade-in on IntroCover now).
+        # Frame 0 is a frozen cover baked by <Freeze> in Root.tsx.
+        # -ss 0 extracts the very first frame which is always the full cover.
         subprocess.run(
             [
                 "ffmpeg", "-y",
                 "-i", str(video_path),
-                "-ss", "0.5",
+                "-ss", "0",
                 "-vframes", "1",
                 "-q:v", "2",            # high-quality JPEG
                 "-update", "1",

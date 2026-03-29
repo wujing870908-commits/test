@@ -11,6 +11,7 @@ load_dotenv()
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
 OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "anthropic/claude-sonnet-4-5")
 NEWS_API_KEY = os.getenv("NEWS_API_KEY", "")          # newsapi.org (free tier OK)
+FMP_API_KEY = os.getenv("FMP_API_KEY", "")            # financialmodelingprep.com
 EDGE_TTS_VOICE = os.getenv("EDGE_TTS_VOICE", "zh-CN-XiaoxiaoNeural")  # female voice
 EDGE_TTS_RATE  = os.getenv("EDGE_TTS_RATE",  "+40%")                 # 40% faster
 

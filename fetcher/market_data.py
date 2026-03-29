@@ -1,5 +1,7 @@
 """
-Fetches overnight US market data via yfinance.
+Fetches overnight US market data.
+Primary source: FMP API (if FMP_API_KEY is set) — provides intraday 1-min data.
+Fallback: yfinance (free, no key required).
 Returns a structured dict ready for AI processing and Remotion rendering.
 """
 from __future__ import annotations
@@ -15,8 +17,8 @@ from config import INDICES, MAG7, COMMODITIES, SECTORS
 logger = logging.getLogger(__name__)
 
 
-def _fetch_ticker(symbol: str) -> dict[str, Any]:
-    """Return price, change%, and 30-day history for one ticker."""
+def _fetch_ticker_yf(symbol: str) -> dict[str, Any]:
+    """Return price, change%, and 30-day history via yfinance (fallback)."""
     tk = yf.Ticker(symbol)
     # Pull last 2 trading days to compute overnight change
     hist = tk.history(period="2d", interval="1d")
@@ -25,7 +27,7 @@ def _fetch_ticker(symbol: str) -> dict[str, Any]:
 
     if hist.empty:
         logger.warning("No data for %s", symbol)
-        return {"price": None, "change_pct": None, "history": []}
+        return {"price": None, "change_pct": None, "history": [], "intraday": []}
 
     latest = hist["Close"].iloc[-1]
     prev   = hist["Close"].iloc[-2]
@@ -38,11 +40,36 @@ def _fetch_ticker(symbol: str) -> dict[str, Any]:
         for d, c in zip(hist30.index, hist30["Close"])
     ]
 
+    # yfinance intraday: try 1-day 1-min data
+    intraday = []
+    try:
+        hist_intra = tk.history(period="1d", interval="1m")
+        if not hist_intra.empty:
+            intraday = [
+                {"time": str(d.time())[:5], "close": round(float(c), 4)}
+                for d, c in zip(hist_intra.index, hist_intra["Close"])
+            ]
+    except Exception:
+        pass
+
     return {
         "price":      round(float(latest), 4),
         "change_pct": round(float(change_pct), 2),
         "history":    history,
+        "intraday":   intraday,
     }
+
+
+def _fetch_ticker(symbol: str) -> dict[str, Any]:
+    """Fetch ticker data. Prefer FMP if available, fall back to yfinance."""
+    try:
+        from fetcher.fmp_data import is_available, fetch_ticker_fmp
+        if is_available():
+            logger.info("Using FMP API for %s", symbol)
+            return fetch_ticker_fmp(symbol)
+    except ImportError:
+        pass
+    return _fetch_ticker_yf(symbol)
 
 
 def fetch_market_snapshot() -> dict[str, Any]:

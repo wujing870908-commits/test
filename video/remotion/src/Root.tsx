@@ -1,7 +1,33 @@
 import React from "react";
-import { Composition } from "remotion";
+import { Composition, Freeze, Series } from "remotion";
 import { DailyReport } from "./Composition";
 import type { DailyReportProps } from "./types";
+
+/**
+ * Wrapper that bakes a 1-frame frozen cover into frame 0.
+ * Every platform (file browser, WeChat Video, iMessage, Reels) uses
+ * the first frame as thumbnail, so this guarantees the cover is shown.
+ */
+const DailyReportWithCover: React.FC<DailyReportProps> = (props) => {
+  const mainDuration = Math.max(
+    Math.ceil((props.manifest.total_duration_ms / 1000) * 30),
+    60,
+  );
+  return (
+    <Series>
+      {/* 1-frame still — frozen at frame 60 where IntroCover is fully rendered */}
+      <Series.Sequence durationInFrames={1}>
+        <Freeze frame={60}>
+          <DailyReport {...props} />
+        </Freeze>
+      </Series.Sequence>
+      {/* Then the live animated content with audio */}
+      <Series.Sequence durationInFrames={mainDuration}>
+        <DailyReport {...props} />
+      </Series.Sequence>
+    </Series>
+  );
+};
 
 // Default props for Studio preview (replaced by real data at render time)
 const defaultProps: DailyReportProps = {
@@ -52,19 +78,22 @@ const defaultProps: DailyReportProps = {
     { title: "特朗普下令打击伊朗石油枢纽，霍尔木兹局势升温", source: "Reuters" },
     { title: "美联储官员暗示通胀黏性，降息预期降温", source: "Bloomberg" },
   ],
+  customTitle: undefined,
+  customSubtitle: undefined,
+  sectionTitles: undefined,
 };
 
 export const Root: React.FC = () => {
   return (
     <Composition
       id="DailyReport"
-      component={DailyReport}
-      // calculateMetadata reads actual props at render time for correct duration
+      component={DailyReportWithCover}
+      // +1 frame for the frozen cover still at frame 0
       calculateMetadata={({ props }) => {
-        const durationInFrames = Math.ceil(
+        const mainFrames = Math.ceil(
           (props.manifest.total_duration_ms / 1000) * 30
         );
-        return { durationInFrames: Math.max(durationInFrames, 60) };
+        return { durationInFrames: Math.max(mainFrames, 60) + 1 };
       }}
       fps={30}
       width={1080}

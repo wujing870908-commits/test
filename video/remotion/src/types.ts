@@ -3,10 +3,16 @@ export interface HistoryPoint {
   close: number;
 }
 
+export interface IntradayPoint {
+  time: string;   // "HH:MM"
+  close: number;
+}
+
 export interface AssetData {
   price: number | null;
   change_pct: number | null;
   history: HistoryPoint[];
+  intraday?: IntradayPoint[];
 }
 
 export interface TimingSegment {
@@ -38,4 +44,10 @@ export interface DailyReportProps {
   snapshot: MarketSnapshot;
   manifest: Manifest;
   newsItems: Array<{ title: string; source: string }>;
+  /** Custom video title (replaces "每日市场报告") */
+  customTitle?: string;
+  /** Custom English subtitle (replaces "Daily Market Report") */
+  customSubtitle?: string;
+  /** Override section titles, e.g. { indices: "德系车企股价" } */
+  sectionTitles?: Record<string, string>;
 }
