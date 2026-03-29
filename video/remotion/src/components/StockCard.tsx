@@ -6,9 +6,10 @@ interface StockCardProps {
   name: string;
   data: AssetData;
   delay?: number;
+  compact?: boolean;
 }
 
-export const StockCard: React.FC<StockCardProps> = ({ name, data, delay = 0 }) => {
+export const StockCard: React.FC<StockCardProps> = ({ name, data, delay = 0, compact = false }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
@@ -19,95 +20,63 @@ export const StockCard: React.FC<StockCardProps> = ({ name, data, delay = 0 }) =
   });
 
   const opacity = interpolate(progress, [0, 1], [0, 1]);
-  const translateY = interpolate(progress, [0, 1], [16, 0]);
+  const translateX = interpolate(progress, [0, 1], [-16, 0]);
 
   const isUp = (data.change_pct ?? 0) >= 0;
-  const color = isUp ? "#00e676" : "#ff4060";
-  const arrow = isUp ? "▲" : "▼";
+  const color = isUp ? "#16a34a" : "#dc2626";
+  const badgeBg = isUp ? "#dcfce7" : "#fee2e2";
   const sign = isUp ? "+" : "";
+  const arrow = isUp ? "▲" : "▼";
+
+  const rowPad = compact ? 14 : 20;
+  const nameSz = compact ? 24 : 28;
+  const priceSz = compact ? 26 : 32;
+  const changeSz = compact ? 18 : 22;
+  const arrowSz = compact ? 14 : 16;
 
   return (
     <div
       style={{
         opacity,
-        transform: `translateY(${translateY}px)`,
-        background: "linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)",
-        border: `1px solid ${color}40`,
-        borderRadius: 16,
-        padding: "22px 26px",
-        position: "relative",
-        overflow: "hidden",
+        transform: `translateX(${translateX}px)`,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        paddingTop: rowPad,
+        paddingBottom: rowPad,
+        borderBottom: "1px solid #e2e8f0",
       }}
     >
-      {/* Top accent glow bar */}
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          height: 3,
-          background: `linear-gradient(90deg, transparent 0%, ${color} 40%, ${color} 60%, transparent 100%)`,
-          opacity: 0.9,
-        }}
-      />
-      {/* Corner glow */}
-      <div
-        style={{
-          position: "absolute",
-          top: -40,
-          right: -40,
-          width: 120,
-          height: 120,
-          borderRadius: "50%",
-          background: `radial-gradient(circle, ${color}18 0%, transparent 70%)`,
-        }}
-      />
-
-      {/* Name */}
-      <div
-        style={{
-          color: "rgba(255,255,255,0.65)",
-          fontSize: 20,
-          fontWeight: 500,
-          letterSpacing: 1,
-          marginBottom: 10,
-        }}
-      >
+      {/* Left: name */}
+      <div style={{ color: "#1e293b", fontSize: nameSz, fontWeight: 700 }}>
         {name}
       </div>
 
-      {/* Price */}
-      <div
-        style={{
-          color: "#ffffff",
-          fontSize: 38,
-          fontWeight: 900,
-          letterSpacing: -0.5,
-          lineHeight: 1,
-          marginBottom: 8,
-          textShadow: "0 0 30px rgba(255,255,255,0.15)",
-        }}
-      >
-        {data.price != null ? data.price.toLocaleString() : "--"}
-      </div>
-
-      {/* Change */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 6,
-          color,
-          fontSize: 24,
-          fontWeight: 700,
-          textShadow: `0 0 16px ${color}80`,
-        }}
-      >
-        <span style={{ fontSize: 18 }}>{arrow}</span>
-        <span>
-          {sign}{data.change_pct != null ? data.change_pct.toFixed(2) : "--"}%
-        </span>
+      {/* Right: price + change badge */}
+      <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+        <div style={{ color: "#1e293b", fontSize: priceSz, fontWeight: 800 }}>
+          {data.price != null ? data.price.toLocaleString() : "--"}
+        </div>
+        <div
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 4,
+            background: badgeBg,
+            color,
+            fontSize: changeSz,
+            fontWeight: 700,
+            padding: "4px 14px",
+            borderRadius: 6,
+            minWidth: 110,
+            justifyContent: "center",
+          }}
+        >
+          <span style={{ fontSize: arrowSz }}>{arrow}</span>
+          <span>
+            {sign}{data.change_pct != null ? data.change_pct.toFixed(2) : "--"}%
+          </span>
+        </div>
       </div>
     </div>
   );

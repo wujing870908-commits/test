@@ -34,7 +34,7 @@ export const MiniChart: React.FC<MiniChartProps> = ({
     >
       <defs>
         <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="5%"  stopColor={color} stopOpacity={0.4} />
+          <stop offset="5%"  stopColor={color} stopOpacity={0.25} />
           <stop offset="95%" stopColor={color} stopOpacity={0}   />
         </linearGradient>
       </defs>
@@ -43,7 +43,7 @@ export const MiniChart: React.FC<MiniChartProps> = ({
         type="monotone"
         dataKey="close"
         stroke={color}
-        strokeWidth={2}
+        strokeWidth={2.5}
         fill={`url(#${gradId})`}
         dot={false}
         isAnimationActive={false}

@@ -15,12 +15,12 @@ export const NewsTicket: React.FC<NewsTicketProps> = ({ items, startFrame = 0 })
       style={{
         position: "absolute",
         top: 120,
-        bottom: 530,   // same safe zone as ContentArea
+        bottom: 530,
         left: 40,
-        right: 120,    // avoid Douyin action buttons
+        right: 120,
         display: "flex",
         flexDirection: "column",
-        justifyContent: "center",
+        justifyContent: "flex-start",
         gap: 20,
       }}
     >
@@ -30,31 +30,26 @@ export const NewsTicket: React.FC<NewsTicketProps> = ({ items, startFrame = 0 })
           style={{
             display: "inline-flex",
             alignItems: "center",
-            gap: 10,
-            borderBottom: "2px solid rgba(0,180,255,0.4)",
-            paddingBottom: 12,
+            background: "#e3f2fd",
+            color: "#1565c0",
+            fontSize: 20,
+            fontWeight: 700,
+            padding: "8px 20px",
+            borderRadius: 30,
+            marginBottom: 20,
+            letterSpacing: 1,
           }}
         >
-          <div
-            style={{
-              width: 6,
-              height: 28,
-              background: "#00b4ff",
-              borderRadius: 3,
-              boxShadow: "0 0 12px #00b4ff",
-            }}
-          />
-          <span
-            style={{
-              color: "#00b4ff",
-              fontSize: 26,
-              fontWeight: 900,
-              letterSpacing: 4,
-              textShadow: "0 0 16px rgba(0,180,255,0.5)",
-            }}
-          >
-            宏观焦点
-          </span>
+          Macro Focus
+        </div>
+        <div style={{
+          color: "#0f172a",
+          fontSize: 60,
+          fontWeight: 900,
+          letterSpacing: -1,
+          lineHeight: 1.1,
+        }}>
+          宏观焦点
         </div>
       </div>
 
@@ -74,21 +69,21 @@ export const NewsTicket: React.FC<NewsTicketProps> = ({ items, startFrame = 0 })
             style={{
               opacity,
               transform: `translateY(${translateY}px)`,
-              background: "linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)",
-              border: "1px solid rgba(255,255,255,0.1)",
-              borderLeft: "4px solid rgba(0,180,255,0.6)",
+              background: "#ffffff",
+              border: "1px solid #e2e8f0",
+              borderLeft: "5px solid #1565c0",
               borderRadius: "0 14px 14px 0",
               padding: "20px 24px",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
             }}
           >
             <div
               style={{
-                color: "#ffffff",
+                color: "#1e293b",
                 fontSize: 26,
-                lineHeight: 1.55,
+                lineHeight: 1.5,
                 fontWeight: 600,
                 marginBottom: 8,
-                textShadow: "0 1px 3px rgba(0,0,0,0.5)",
               }}
             >
               {item.title}
@@ -98,12 +93,12 @@ export const NewsTicket: React.FC<NewsTicketProps> = ({ items, startFrame = 0 })
                 display: "inline-flex",
                 alignItems: "center",
                 gap: 6,
-                color: "rgba(0,180,255,0.65)",
+                color: "#64748b",
                 fontSize: 18,
                 fontWeight: 500,
               }}
             >
-              <span style={{ opacity: 0.5 }}>●</span>
+              <span style={{ color: "#1565c0" }}>●</span>
               {item.source}
             </div>
           </div>

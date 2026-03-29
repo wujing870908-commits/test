@@ -135,6 +135,105 @@ Remotion 渲染时 → useCurrentSegment(frame)
 
 ---
 
+## 专题视频生成器
+
+除了每日美股日报，系统还支持**自定义专题视频**——只需写一个 YAML 配置文件。
+
+### 快速上手
+
+```bash
+# 1. 复制模板
+cp topics/_template.yaml topics/my_topic.yaml
+
+# 2. 编辑配置（填入标题、股票代码、新闻、背景信息）
+vi topics/my_topic.yaml
+
+# 3. 生成视频
+python3 generate_topic_video.py topics/my_topic.yaml
+
+# 跳过渲染只生成脚本+音频（快速预览）
+python3 generate_topic_video.py topics/my_topic.yaml --no-video
+
+# 自定义输出文件名
+python3 generate_topic_video.py topics/my_topic.yaml --slug v2-test
+```
+
+输出文件位于 `~/jobs/专题视频/YYYY-MM-DD_slug/`。
+
+### 现有选题
+
+| 文件 | 选题 | 说明 |
+|------|------|------|
+| `topics/_template.yaml` | 空白模板 | 有详细注释，复制即用 |
+| `topics/auto_war.yaml` | 德国汽车 vs 中国新能源 | 德系利润暴跌 vs BYD反攻欧洲 |
+| `topics/gold_crash.yaml` | 黄金暴跌反常识 | 打仗了黄金反而跌23% |
+| `topics/us_jobs_fake.yaml` | 美国就业虚假繁荣 | 一个行业撑起整个数据 |
+
+### YAML 配置说明
+
+```yaml
+title: "视频标题"                # 显示在封面
+subtitle: "English Subtitle"    # 封面英文副标题
+slug: my-topic                  # 输出文件夹名
+
+tts_voice: "zh-CN-YunyangNeural"  # 男声（有力）
+tts_rate: "+35%"                   # 语速
+duration_target: "90-120秒"        # AI控制脚本长度
+history_period: "6mo"              # 走势图周期
+
+# 股票分组（最多4组，对应视频4个展示区域）
+stocks:
+  indices:                    # 第一组：带走势图（适合3-5只）
+    label: "组名"
+    tickers:
+      中文名: YAHOO_TICKER
+
+  mag7:                       # 第二组：紧凑卡片（适合5-7只）
+    label: "组名"
+    tickers: { ... }
+
+  commodities:                # 第三组：横向对比柱状图
+    label: "涨跌幅对比"
+    mode: ytd                 # ytd=年初至今 / daily=当日
+    tickers: { ... }
+
+  sectors:                    # 第四组：紧凑卡片
+    label: "组名"
+    tickers: { ... }
+
+# Yahoo Finance 代码速查：
+#   A股: 000001.SZ / 600000.SS    港股: 0700.HK
+#   美股: AAPL / TSLA             德股: VOW3.DE
+#   ETF: SPY / QQQ / XLK         商品: GC=F / CL=F
+#   指数: ^GSPC / ^IXIC          加密: BTC-USD
+
+news_items:                   # 新闻区（最多4条）
+  - title: "标题"
+    source: "来源"
+
+extra_context: |              # 注入AI的背景信息
+  关键数据和你想强调的观点...
+```
+
+### 文件路径总览
+
+```
+/root/claudeCode/remotion-daily-report/test/
+├── generate_topic_video.py     ← 专题视频生成引擎
+├── topics/                     ← 选题配置目录
+│   ├── _template.yaml          ← 空白模板
+│   ├── auto_war.yaml           ← 德国汽车 vs 中国新能源
+│   ├── gold_crash.yaml         ← 黄金暴跌
+│   └── us_jobs_fake.yaml       ← 美国就业
+├── main.py                     ← 每日美股日报（原有）
+├── config.py                   ← 环境变量配置
+└── video/remotion/             ← Remotion 视频模板
+```
+
+输出目录：`~/jobs/专题视频/YYYY-MM-DD_slug/`
+
+---
+
 ## 常见问题
 
 **Q: 视频渲染报错 `ffmpeg not found`**
